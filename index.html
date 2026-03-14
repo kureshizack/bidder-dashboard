@@ -306,6 +306,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
         <div class="panel-title">✏️ Edit Players</div>
         <div id="playerEditList" style="max-height:320px;overflow-y:auto;"></div>
       </div>
+      <div class="panel" style="border-color:var(--red);">
+        <div class="panel-title" style="color:var(--red);">⚠️ Reset</div>
+        <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Wipes ALL data — teams, players, sales. Use at the start of a new auction.</p>
+        <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset Everything</button>
+      </div>
     </div>
   </div>
 </div>
@@ -334,13 +339,29 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 
 <script>
 // ── STATE ──────────────────────────────────────────────────
-let state={
+const STATE_KEY='auc_state_v1';
+function loadState(){
+  try{
+    const s=localStorage.getItem(STATE_KEY);
+    if(s) return JSON.parse(s);
+  }catch(e){}
+  return null;
+}
+function saveState(){
+  try{ localStorage.setItem(STATE_KEY,JSON.stringify(state)); }catch(e){}
+}
+const _saved=loadState();
+let state=_saved||{
   teams:[],   // {name,startCredits,credits,minSquad,players:[{name,role,price,time,star}]}
   players:[], // {name,role,basePrice,soldTo,price,time,star}
   sales:[],   // {player,role,team,amount,basePrice,time,star}
   myTeam:'',
   defaultCredits:1000
 };
+// Auto-save every 5 seconds + on tab close/hide
+setInterval(saveState,5000);
+window.addEventListener('beforeunload',saveState);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveState(); });
 let editingOrig=null;
 
 // ── UTILS ──────────────────────────────────────────────────
@@ -375,6 +396,7 @@ function setMyTeam(){
   state.myTeam=document.getElementById('myTeamSelect').value;
   document.getElementById('headerMyTeam').textContent=state.myTeam?`⭐ ${state.myTeam}`:'';
   renderDashboard();
+  saveState();
 }
 function refreshMyTeamSelect(){
   const sel=document.getElementById('myTeamSelect');
@@ -390,6 +412,7 @@ function setDefaultCredits(){
   if(isNaN(v)||v<=0){showMsg('setupMsg','Enter valid amount');return;}
   state.defaultCredits=v;
   document.getElementById('newTeamCredits').value=v;
+  saveState();
   showMsg('setupMsg',`Default set to ₹${v}L`,'success');
 }
 
@@ -407,6 +430,7 @@ function addTeam(){
   document.getElementById('newTeamCredits').value='';
   renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
   showMsg('setupMsg','Team added!','success');
+  saveState();
 }
 function removeTeam(name){
   if(!confirm(`Remove "${name}"?`))return;
@@ -416,6 +440,7 @@ function removeTeam(name){
   state.sales=state.sales.filter(s=>s.team!==name);
   if(state.myTeam===name)state.myTeam='';
   renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+  saveState();
 }
 function startEditTeam(name){
   const t=state.teams.find(x=>x.name===name);if(!t)return;
@@ -438,6 +463,7 @@ function saveEditTeam(old){
   t.name=nn;t.minSquad=nm;
   state.teams.sort((a,b)=>a.name.localeCompare(b.name));
   renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+  saveState();
 }
 function renderTeamSetupList(){
   const el=document.getElementById('teamSetupList');
@@ -470,6 +496,7 @@ function importPlayers(){
   showMsg('playerImportMsg',`Added ${added}, skipped ${skip}.`,'success');
   document.getElementById('playerCount').textContent=`Total: ${state.players.length}`;
   renderPlayerEditList();renderAllPlayers();
+  saveState();
 }
 function clearPlayers(){
   if(!confirm('Clear all players and sales?'))return;
@@ -477,6 +504,7 @@ function clearPlayers(){
   state.teams.forEach(t=>{t.players=[];t.credits=t.startCredits;});
   renderPlayerEditList();renderAllPlayers();renderDashboard();
   document.getElementById('playerCount').textContent='';
+  saveState();
 }
 function renderPlayerEditList(){
   const el=document.getElementById('playerEditList');
@@ -500,6 +528,7 @@ function toggleStar(name,el){
   // sync to team players
   state.teams.forEach(t=>{const tp=t.players.find(x=>x.name===name);if(tp)tp.star=p.star;});
   renderAllPlayers();renderRecentSales();renderDashboard();
+  saveState();
 }
 function openEditPlayer(name){
   const p=state.players.find(x=>x.name===name);if(!p)return;
@@ -524,6 +553,7 @@ function saveEditPlayer(){
   p.name=nn;p.role=nr;p.basePrice=nb;
   closeModal('editPlayerModal');
   renderPlayerEditList();renderAllPlayers();renderDashboard();renderRecentSales();
+  saveState();
 }
 
 // ── AUTOCOMPLETE ───────────────────────────────────────────
@@ -612,6 +642,7 @@ function recordSale(){
   state.sales.unshift({player:player.name,role:player.role,team:team.name,amount:amt,basePrice:player.basePrice||0,time:ts,star:player.star});
   showMsg('saleMsg',`✅ ${player.name} → ${team.name} for ₹${amt}L`,'success');
   resetSaleForm();renderDashboard();renderRecentSales();renderAllPlayers();
+  saveState();
 }
 function resetSaleForm(){
   ['playerInput','saleAmount','teamInput'].forEach(id=>document.getElementById(id).value='');
@@ -631,6 +662,7 @@ function releasePlayer(tn,pn){
   player.soldTo=null;player.price=null;player.time=null;
   state.sales=state.sales.filter(s=>!(s.player===pn&&s.team===tn));
   renderDashboard();renderAllPlayers();renderRecentSales();
+  saveState();
   alert(`${pn} released. ₹${refund}L refunded to ${tn}.`);
 }
 
@@ -848,7 +880,19 @@ function renderStrategy(){
   </div>`;
 }
 
+// ── RESET ALL ──────────────────────────────────────────────
+function resetAll(){
+  if(!confirm('Reset EVERYTHING? This cannot be undone.'))return;
+  localStorage.removeItem(STATE_KEY);
+  location.reload();
+}
+
 // ── INIT ───────────────────────────────────────────────────
+// Restore UI elements that depend on saved state
+document.getElementById('headerMyTeam').textContent=state.myTeam?`⭐ ${state.myTeam}`:'';
+document.getElementById('playerCount').textContent=state.players.length?`Total: ${state.players.length}`:'';
+if(state.defaultCredits&&state.defaultCredits!==1000)
+  document.getElementById('defaultCredits').value=state.defaultCredits;
 renderTeamSetupList();refreshMyTeamSelect();
 renderDashboard();renderRecentSales();renderAllPlayers();renderBidChips();
 </script>
