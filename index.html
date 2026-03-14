@@ -353,6 +353,14 @@ let editingOrig=null;
 
 // ── UTILS ──────────────────────────────────────────────────
 const now=()=>new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+function normalizeRole(r){
+  const s=(r||'').toUpperCase().trim();
+  if(s==='BAT'||s==='BATSMAN'||s==='BATTER')return 'BAT';
+  if(s==='BOWL'||s==='BOWLER'||s==='BOWLING')return 'BOWL';
+  if(s==='ALL'||s==='ALLROUNDER'||s==='ALL-ROUNDER'||s==='ALL ROUNDER')return 'ALL';
+  if(s==='WK'||s==='WICKETKEEPER'||s==='KEEPER'||s==='WICKET KEEPER')return 'WK';
+  return 'BAT'; // default fallback
+}
 const rc=r=>r==='BAT'?'role-BAT':r==='BOWL'?'role-BOWL':r==='ALL'?'role-ALL':r==='WK'?'role-WK':'';
 const fundCol=p=>p>50?'var(--green)':p>20?'var(--yellow)':'var(--red)';
 const esc=s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
@@ -475,7 +483,7 @@ function importPlayers(){
   raw.split('\n').map(l=>l.trim()).filter(l=>l).forEach(line=>{
     const p=line.split(',').map(s=>s.trim());
     if(!p[0]){skip++;return;}
-    const name=p[0],role=(p[1]||'BAT').toUpperCase(),base=parseFloat(p[2])||0;
+    const name=p[0],role=normalizeRole(p[1]||'BAT'),base=parseFloat(p[2])||0;
     if(state.players.find(x=>x.name.toLowerCase()===name.toLowerCase())){skip++;return;}
     state.players.push({name,role,basePrice:base,soldTo:null,price:null,time:null,star:false});
     added++;
@@ -527,7 +535,7 @@ function openEditPlayer(name){
 function saveEditPlayer(){
   const p=state.players.find(x=>x.name===editingOrig);if(!p)return;
   const nn=document.getElementById('editPlayerName').value.trim();
-  const nr=document.getElementById('editPlayerRole').value;
+  const nr=normalizeRole(document.getElementById('editPlayerRole').value);
   const nb=parseFloat(document.getElementById('editPlayerBase').value)||0;
   if(!nn){alert('Name required');return;}
   if(nn!==editingOrig&&state.players.find(x=>x.name.toLowerCase()===nn.toLowerCase())){alert('Name exists');return;}
@@ -696,7 +704,7 @@ function renderTeamGrid(){
   el.innerHTML=sorted.map(t=>{
     const p=pct(t),col=fundCol(p),isMe=t.name===state.myTeam;
     const rc2={BAT:0,BOWL:0,ALL:0,WK:0};
-    t.players.forEach(x=>{if(rc2[x.role]!==undefined)rc2[x.role]++;});
+    t.players.forEach(x=>{const nr=normalizeRole(x.role);if(rc2[nr]!==undefined)rc2[nr]++;});
     const slots=t.minSquad-t.players.length;
     const avg=slots>0?Math.floor(t.credits/slots):0;
     const tags=t.players.map(x=>`
@@ -773,7 +781,7 @@ function renderStrategy(){
   const rivals=state.teams.filter(t=>t.name!==state.myTeam).sort((a,b)=>a.name.localeCompare(b.name));
   const myPct=pct(me);
   const myRC={BAT:0,BOWL:0,ALL:0,WK:0};
-  me.players.forEach(p=>{if(myRC[p.role]!==undefined)myRC[p.role]++;});
+  me.players.forEach(p=>{const nr=normalizeRole(p.role);if(myRC[nr]!==undefined)myRC[nr]++;});
   const slots=me.minSquad-me.players.length;
   const avgSlot=slots>0?Math.floor(me.credits/slots):0;
   const starsLeft=state.players.filter(p=>p.star&&!p.soldTo).length;
@@ -786,7 +794,7 @@ function renderStrategy(){
     const av=sl>0?Math.floor(t.credits/sl):0;
     const tight=sl>2&&t.credits<avgSlot*sl*0.7;
     const tRC={BAT:0,BOWL:0,ALL:0,WK:0};
-    t.players.forEach(x=>{if(tRC[x.role]!==undefined)tRC[x.role]++;});
+    t.players.forEach(x=>{const nr=normalizeRole(x.role);if(tRC[nr]!==undefined)tRC[nr]++;});
     const weak=Object.entries(tRC).filter(([r,c])=>c===0).map(([r])=>r);
     return {name:t.name,p,col,credits:t.credits,sl,av,tight,weak};
   });
