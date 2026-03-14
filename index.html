@@ -74,13 +74,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 .player-table tr:hover td{background:var(--surface2);}
 .sold-row td:first-child{border-left:3px solid var(--green);}
 .star-row{background:rgba(245,158,11,0.04);}
-.chart-wrap{padding:4px 0;}
-.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
-.chart-label{font-size:13px;color:var(--muted);width:120px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.chart-wrap{padding:4px 0;display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
+@media(max-width:700px){.chart-wrap{grid-template-columns:1fr;}}
+.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:5px;}
+.chart-label{font-size:13px;color:var(--muted);width:110px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
 .chart-label.my-label{color:var(--accent);font-weight:700;}
-.chart-bar-bg{flex:1;max-width:260px;background:var(--border);border-radius:4px;height:14px;overflow:hidden;}
+.chart-bar-bg{flex:1;background:var(--border);border-radius:4px;height:14px;overflow:hidden;}
 .chart-bar-fill{height:100%;border-radius:4px;transition:width 0.4s;}
-.chart-val{font-size:12px;width:90px;flex-shrink:0;text-align:right;font-weight:600;}
+.chart-val{font-size:12px;width:85px;flex-shrink:0;font-weight:600;}
 .strategy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:10px;}
 .sc{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 13px;}
 .sc-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;font-weight:600;}
@@ -226,6 +227,56 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 
 <!-- STRATEGY -->
 <div class="tab-content" id="tab-strategy">
+
+  <!-- Static Auction Tips -->
+  <div class="panel" style="border-color:var(--accent);margin-bottom:16px;">
+    <div class="panel-title">📖 Auction Playbook — Keep This in Mind</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;">
+
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px;">💰 Budget Rules</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="font-size:13px;color:var(--text);">• Never spend more than <b style="color:var(--accent);">30–35%</b> of budget on a single player</li>
+          <li style="font-size:13px;color:var(--text);">• Keep at least <b style="color:var(--accent);">20%</b> in reserve until last 3 rounds</li>
+          <li style="font-size:13px;color:var(--text);">• Always know your <b style="color:var(--accent);">max-per-slot</b> number before bidding</li>
+          <li style="font-size:13px;color:var(--text);">• If a rival is <b style="color:var(--red);">below 25%</b> budget — bid freely, they can't follow</li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px;">🎯 Bidding Strategy</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="font-size:13px;color:var(--text);">• Nominate players you <b style="color:var(--accent);">don't want</b> early — drain rival budgets</li>
+          <li style="font-size:13px;color:var(--text);">• Push rivals who <b style="color:var(--red);">need a role</b> — they MUST buy and will overpay</li>
+          <li style="font-size:13px;color:var(--text);">• Let rivals fight over big names — swoop in on <b style="color:var(--accent);">overlooked mid-tier</b></li>
+          <li style="font-size:13px;color:var(--text);">• Stars drive panic — use them to <b style="color:var(--accent);">drain budgets</b>, not always to win</li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px;">🧩 Squad Balance</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="font-size:13px;color:var(--text);">• Ideal mix: <b style="color:var(--accent);">4 BAT · 4 BOWL · 2 ALL · 1 WK</b> (adjust per format)</li>
+          <li style="font-size:13px;color:var(--text);">• Fill <b style="color:var(--accent);">WK first</b> — only a few available, they go fast</li>
+          <li style="font-size:13px;color:var(--text);">• ALL-rounders give flexibility — worth a <b style="color:var(--accent);">slight premium</b></li>
+          <li style="font-size:13px;color:var(--text);">• Don't pile 5+ batsmen — you'll scramble for bowlers at inflated prices</li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:6px;">⚠️ Common Mistakes</div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;">
+          <li style="font-size:13px;color:var(--text);">• <b style="color:var(--red);">Emotional bidding</b> — don't chase a player just because rivals want him</li>
+          <li style="font-size:13px;color:var(--text);">• <b style="color:var(--red);">Forgetting slots</b> — 5 slots left, 5 players in pool? Every one gets bought expensive</li>
+          <li style="font-size:13px;color:var(--text);">• <b style="color:var(--red);">Spending early</b> — best value players often come in middle rounds</li>
+          <li style="font-size:13px;color:var(--text);">• <b style="color:var(--red);">Ignoring rivals</b> — always check their budget % before entering a bidding war</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Dynamic strategy analysis -->
   <div id="strategyContent"></div>
 </div>
 
@@ -335,7 +386,9 @@ function loadState(){
   try{const s=localStorage.getItem(STATE_KEY);if(s)return JSON.parse(s);}catch(e){}
   return null;
 }
+let _skipSave=false;
 function saveState(){
+  if(_skipSave)return;
   try{localStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){}
 }
 const _saved=loadState();
@@ -877,6 +930,7 @@ function renderStrategy(){
 // ── RESET ALL ──────────────────────────────────────────────
 function resetAll(){
   if(!confirm('Reset EVERYTHING? This cannot be undone.'))return;
+  _skipSave=true;
   localStorage.removeItem(STATE_KEY);
   location.reload();
 }
