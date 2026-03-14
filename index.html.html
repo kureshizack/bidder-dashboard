@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏏 Cricket Auction Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0c1018;--surface:#141a24;--surface2:#1b2333;--surface3:#222d40;
+  --border:#2a3448;--accent:#f0a500;--text:#dce6f0;--muted:#6b7a90;
+  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;--purple:#bc8cff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;}
+.header{background:var(--surface);border-bottom:2px solid var(--accent);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;}
+h1{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--accent);letter-spacing:1px;}
+.header-right{display:flex;gap:6px;align-items:center;}
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 14px;overflow-x:auto;}
+.tab{padding:8px 13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.4px;transition:all 0.2s;white-space:nowrap;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab:hover:not(.active){color:var(--text);}
+.tab-content{display:none;padding:11px 13px;}
+.tab-content.active{display:block;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px;}
+.panel-title{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:4px;font-family:'Noto Sans',sans-serif;font-size:12px;outline:none;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+.form-row{display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;}
+.form-group{display:flex;flex-direction:column;gap:3px;}
+.form-group label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
+.btn{padding:5px 12px;border-radius:4px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:12px;transition:all 0.15s;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#000;}.btn-primary:hover{background:#f5b800;}
+.btn-danger{background:var(--red);color:#fff;}.btn-danger:hover{filter:brightness(1.2);}
+.btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover{color:var(--text);}
+.btn-sm{padding:2px 7px;font-size:10px;}
+.btn-sale{padding:10px 28px;font-size:17px;font-weight:700;background:var(--green);color:#000;border-radius:6px;}.btn-sale:hover{background:#4fd060;}
+.btn-tiny{padding:1px 5px;font-size:10px;background:var(--surface3);color:var(--muted);border:1px solid var(--border);border-radius:3px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;}.btn-tiny:hover{color:var(--text);}
+.my-team-badge{background:var(--accent);color:#000;border-radius:3px;padding:1px 5px;font-size:9px;font-weight:700;margin-left:4px;}
+.team-card.is-my-team{border-color:var(--accent);}
+.team-card.is-my-team .team-name{color:var(--accent);}
+.autocomplete-wrap{position:relative;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-top:none;border-radius:0 0 4px 4px;z-index:200;max-height:200px;overflow-y:auto;}
+.autocomplete-item{padding:5px 10px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;}
+.autocomplete-item:hover{background:var(--surface3);color:var(--accent);}
+.autocomplete-item.is-star{background:rgba(240,165,0,0.05);}
+.star{color:#444;cursor:pointer;font-size:13px;line-height:1;}.star.lit{color:var(--accent);}
+.role-badge{font-size:9px;border-radius:2px;padding:1px 4px;margin-left:2px;font-weight:600;}
+.role-BAT{background:#1a3a5c;color:#58a6ff;}.role-BOWL{background:#3a1a1a;color:#f85149;}
+.role-ALL{background:#1a3a1a;color:#3fb950;}.role-WK{background:#3a2a1a;color:#f0a500;}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;}
+.team-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 11px;}
+.team-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.team-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;}
+.team-credits{font-size:11px;color:var(--muted);}
+.fund-bar-bg{background:var(--border);border-radius:3px;height:7px;width:100%;overflow:hidden;margin:3px 0;}
+.fund-bar-fill{height:100%;border-radius:3px;transition:width 0.4s ease;}
+.fund-bar-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:4px;}
+.team-players{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px;}
+.player-tag{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:2px 5px;font-size:10px;}
+.player-tag.star-tag{border-color:var(--accent);background:rgba(240,165,0,0.06);}
+.ptag-price{color:var(--accent);margin-left:3px;font-weight:600;}
+.release-btn{color:var(--red);cursor:pointer;margin-left:3px;font-size:9px;opacity:0.7;}.release-btn:hover{opacity:1;}
+.role-summary{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
+.role-pill{font-size:9px;padding:1px 5px;border-radius:10px;border:1px solid var(--border);color:var(--muted);}
+.player-table{width:100%;border-collapse:collapse;font-size:11px;}
+.player-table th{background:var(--surface);color:var(--muted);text-transform:uppercase;font-size:9px;letter-spacing:0.4px;padding:5px 7px;text-align:left;border-bottom:1px solid var(--border);font-family:'Rajdhani',sans-serif;}
+.player-table td{padding:4px 7px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.player-table tr:last-child td{border-bottom:none;}
+.player-table tr:hover td{background:var(--surface2);}
+.sold-row td:first-child{border-left:2px solid var(--green);}
+.star-row{background:rgba(240,165,0,0.03);}
+.chart-wrap{padding:3px 0;}
+.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.chart-label{font-size:11px;color:var(--muted);width:110px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.chart-label.my-label{color:var(--accent);font-weight:600;}
+.chart-bar-bg{flex:1;background:var(--border);border-radius:3px;height:12px;overflow:hidden;}
+.chart-bar-fill{height:100%;border-radius:3px;transition:width 0.4s;}
+.chart-val{font-size:10px;width:80px;flex-shrink:0;text-align:right;}
+.strategy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;margin-bottom:8px;}
+.sc{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;}
+.sc-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;}
+.sc-val{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;}
+.sc-sub{font-size:9px;color:var(--muted);margin-top:2px;}
+.rival-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;gap:6px;}
+.rival-row:last-child{border-bottom:none;}
+.bid-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
+.bid-chip{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:3px 8px;cursor:pointer;font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:600;color:var(--blue);}.bid-chip:hover{background:var(--blue);color:#000;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:680px){.two-col{grid-template-columns:1fr;}}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--border);}
+.timestamp{color:var(--muted);font-size:9px;}
+.base-price{color:var(--muted);font-size:10px;}
+.msg{padding:6px 10px;border-radius:4px;margin-bottom:6px;font-size:11px;}
+.msg-error{background:rgba(248,81,73,0.12);border:1px solid var(--red);color:var(--red);}
+.msg-success{background:rgba(63,185,80,0.1);border:1px solid var(--green);color:var(--green);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:280px;max-width:380px;width:90%;}
+.modal h3{font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--accent);margin-bottom:12px;}
+.tag-sold{background:rgba(63,185,80,0.1);border:1px solid var(--green);color:var(--green);border-radius:3px;padding:0 4px;font-size:9px;}
+.tag-free{background:rgba(88,166,255,0.1);border:1px solid var(--blue);color:var(--blue);border-radius:3px;padding:0 4px;font-size:9px;}
+@media print{
+  .no-print,.tabs{display:none!important;}
+  .tab-content{display:block!important;padding:0;}
+  #tab-sale,#tab-players,#tab-strategy,#tab-setup{display:none!important;}
+  #tab-dashboard{display:block!important;}
+  body{background:#fff;color:#000;font-size:11px;}
+  .panel,.team-card{background:#fff!important;border:1px solid #ccc!important;break-inside:avoid;}
+  .team-grid{grid-template-columns:repeat(3,1fr)!important;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏏 AUCTION COMMAND</h1>
+  <div class="header-right no-print">
+    <span id="headerMyTeam" style="font-size:11px;color:var(--muted);"></span>
+    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / PDF</button>
+  </div>
+</div>
+
+<div class="tabs no-print">
+  <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+  <div class="tab" onclick="switchTab('sale')">🔨 Record Sale</div>
+  <div class="tab" onclick="switchTab('strategy')">🎯 My Strategy</div>
+  <div class="tab" onclick="switchTab('players')">📋 All Players</div>
+  <div class="tab" onclick="switchTab('setup')">⚙️ Setup</div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="tab-content active" id="tab-dashboard">
+  <div class="panel">
+    <div class="panel-title">💰 Fund Overview</div>
+    <div class="chart-wrap" id="fundChart"></div>
+  </div>
+  <div id="teamGrid" class="team-grid"></div>
+</div>
+
+<!-- RECORD SALE -->
+<div class="tab-content" id="tab-sale">
+  <div class="panel">
+    <div class="panel-title">🔨 Record Player Sale</div>
+    <div id="saleMsg"></div>
+    <div class="form-row" style="margin-bottom:7px;">
+      <div class="form-group" style="flex:2;min-width:130px;">
+        <label>Player Name</label>
+        <div class="autocomplete-wrap">
+          <input type="text" id="playerInput" placeholder="Type player…" autocomplete="off"
+            oninput="filterPlayerAC()" onfocus="filterPlayerAC()">
+          <div class="autocomplete-list" id="playerDrop" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="form-group" style="flex:1;min-width:80px;">
+        <label>Amount (₹L)</label>
+        <input type="number" id="saleAmount" placeholder="e.g. 50" min="0" oninput="renderBidChips()">
+      </div>
+      <div class="form-group" style="flex:2;min-width:130px;">
+        <label>Buying Team</label>
+        <div class="autocomplete-wrap">
+          <input type="text" id="teamInput" placeholder="Type team…" autocomplete="off"
+            oninput="filterTeamAC()" onfocus="filterTeamAC()">
+          <div class="autocomplete-list" id="teamDrop" style="display:none;"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <button class="btn btn-sale" onclick="recordSale()">✅ Add Sale</button>
+      </div>
+    </div>
+    <div id="playerInfoStrip"></div>
+    <div style="margin-bottom:5px;">
+      <span style="font-size:10px;color:var(--muted);">Quick increments:</span>
+      <div class="bid-chips" id="bidChips"></div>
+    </div>
+    <button class="btn btn-tiny" onclick="resetSaleForm()">↺ Reset</button>
+  </div>
+  <div class="panel">
+    <div class="panel-title">🕐 Recent Sales</div>
+    <table class="player-table" id="recentSaleTable">
+      <thead><tr><th>★</th><th>#</th><th>Player</th><th>Role</th><th>Team</th><th>Amount</th><th>Base</th><th>Time</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- STRATEGY -->
+<div class="tab-content" id="tab-strategy">
+  <div id="strategyContent"></div>
+</div>
+
+<!-- ALL PLAYERS -->
+<div class="tab-content" id="tab-players">
+  <div class="two-col">
+    <div>
+      <div class="section-title">✅ Sold (<span id="soldCount">0</span>)</div>
+      <table class="player-table" id="soldTable">
+        <thead><tr><th>★</th><th>Player</th><th>Role</th><th>Base</th><th>Team</th><th>Amount</th><th>Time</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div>
+      <div class="section-title">🔲 Available (<span id="unsoldCount">0</span>)</div>
+      <table class="player-table" id="unsoldTable">
+        <thead><tr><th>★</th><th>Player</th><th>Role</th><th>Base</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="tab-content" id="tab-setup">
+  <div class="two-col">
+    <div>
+      <div class="panel">
+        <div class="panel-title">⭐ Your Team</div>
+        <div class="form-group">
+          <label>Select your team (enables Strategy tab)</label>
+          <select id="myTeamSelect" onchange="setMyTeam()">
+            <option value="">-- Choose your team --</option>
+          </select>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">💰 Default Starting Credits</div>
+        <div class="form-row">
+          <div class="form-group" style="flex:1;"><label>Credits (₹L) for all teams</label><input type="number" id="defaultCredits" placeholder="e.g. 1000"></div>
+          <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="setDefaultCredits()">Set</button></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">👥 Teams</div>
+        <div class="form-row" style="margin-bottom:7px;">
+          <div class="form-group" style="flex:2;"><label>Team Name</label><input type="text" id="newTeamName" placeholder="Team name"></div>
+          <div class="form-group" style="flex:1;"><label>Credits (₹L)</label><input type="number" id="newTeamCredits" placeholder="auto"></div>
+          <div class="form-group" style="flex:1;"><label>Min Squad</label><input type="number" id="newTeamMinSquad" placeholder="11" value="11" min="1"></div>
+          <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="addTeam()">+ Add</button></div>
+        </div>
+        <div id="setupMsg"></div>
+        <div id="teamSetupList"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <div class="panel-title">📥 Import Players</div>
+        <p style="color:var(--muted);font-size:10px;margin-bottom:5px;">Format: <b>Name, Role, BasePrice</b> &nbsp;|&nbsp; Roles: BAT / BOWL / ALL / WK &nbsp;|&nbsp; Base in ₹L</p>
+        <textarea id="playerCSV" style="width:100%;height:100px;resize:vertical;" placeholder="Virat Kohli,BAT,200&#10;Jasprit Bumrah,BOWL,150&#10;MS Dhoni,WK,100&#10;Hardik Pandya,ALL,120"></textarea>
+        <div style="margin-top:5px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="importPlayers()">📥 Import</button>
+          <button class="btn btn-tiny" onclick="clearPlayers()">Clear All</button>
+          <span id="playerCount" style="font-size:10px;color:var(--muted);"></span>
+        </div>
+        <div id="playerImportMsg" style="margin-top:4px;"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">✏️ Edit Players</div>
+        <div id="playerEditList" style="max-height:320px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PLAYER MODAL -->
+<div class="modal-overlay" id="editPlayerModal">
+  <div class="modal">
+    <h3>✏️ Edit Player</h3>
+    <div class="form-group" style="margin-bottom:8px;"><label>Name</label><input type="text" id="editPlayerName"></div>
+    <div class="form-group" style="margin-bottom:8px;">
+      <label>Role</label>
+      <select id="editPlayerRole">
+        <option value="BAT">BAT — Batsman</option>
+        <option value="BOWL">BOWL — Bowler / Fast Bowler</option>
+        <option value="ALL">ALL — All-Rounder</option>
+        <option value="WK">WK — Wicket Keeper</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;"><label>Base Price (₹L)</label><input type="number" id="editPlayerBase" min="0" placeholder="0"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="saveEditPlayer()">Save</button>
+      <button class="btn btn-ghost" onclick="closeModal('editPlayerModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let state={
+  teams:[],   // {name,startCredits,credits,minSquad,players:[{name,role,price,time,star}]}
+  players:[], // {name,role,basePrice,soldTo,price,time,star}
+  sales:[],   // {player,role,team,amount,basePrice,time,star}
+  myTeam:'',
+  defaultCredits:1000
+};
+let editingOrig=null;
+
+// ── UTILS ──────────────────────────────────────────────────
+const now=()=>new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const rc=r=>r==='BAT'?'role-BAT':r==='BOWL'?'role-BOWL':r==='ALL'?'role-ALL':r==='WK'?'role-WK':'';
+const fundCol=p=>p>50?'var(--green)':p>20?'var(--yellow)':'var(--red)';
+const esc=s=>String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+function showMsg(id,txt,type='error'){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=`<div class="msg msg-${type}">${txt}</div>`;
+  setTimeout(()=>{el.innerHTML='';},3000);
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function pct(t){return Math.max(0,Math.round((t.credits/t.startCredits)*100));}
+
+// ── TABS ───────────────────────────────────────────────────
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelector(`.tab[onclick="switchTab('${name}')"]`).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='dashboard')renderDashboard();
+  if(name==='players')renderAllPlayers();
+  if(name==='sale'){renderRecentSales();renderBidChips();}
+  if(name==='strategy')renderStrategy();
+  if(name==='setup')renderPlayerEditList();
+}
+
+// ── MY TEAM ────────────────────────────────────────────────
+function setMyTeam(){
+  state.myTeam=document.getElementById('myTeamSelect').value;
+  document.getElementById('headerMyTeam').textContent=state.myTeam?`⭐ ${state.myTeam}`:'';
+  renderDashboard();
+}
+function refreshMyTeamSelect(){
+  const sel=document.getElementById('myTeamSelect');
+  const cur=state.myTeam;
+  sel.innerHTML='<option value="">-- Choose your team --</option>'+
+    [...state.teams].sort((a,b)=>a.name.localeCompare(b.name))
+      .map(t=>`<option value="${esc(t.name)}"${t.name===cur?' selected':''}>${t.name}</option>`).join('');
+}
+
+// ── DEFAULT CREDITS ────────────────────────────────────────
+function setDefaultCredits(){
+  const v=parseFloat(document.getElementById('defaultCredits').value);
+  if(isNaN(v)||v<=0){showMsg('setupMsg','Enter valid amount');return;}
+  state.defaultCredits=v;
+  document.getElementById('newTeamCredits').value=v;
+  showMsg('setupMsg',`Default set to ₹${v}L`,'success');
+}
+
+// ── TEAMS ──────────────────────────────────────────────────
+function addTeam(){
+  const name=document.getElementById('newTeamName').value.trim();
+  let cred=parseFloat(document.getElementById('newTeamCredits').value);
+  const minSq=parseInt(document.getElementById('newTeamMinSquad').value)||11;
+  if(!name){showMsg('setupMsg','Enter team name');return;}
+  if(isNaN(cred)||cred<=0)cred=state.defaultCredits;
+  if(state.teams.find(t=>t.name.toLowerCase()===name.toLowerCase())){showMsg('setupMsg','Team exists');return;}
+  state.teams.push({name,startCredits:cred,credits:cred,minSquad:minSq,players:[]});
+  state.teams.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('newTeamName').value='';
+  document.getElementById('newTeamCredits').value='';
+  renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+  showMsg('setupMsg','Team added!','success');
+}
+function removeTeam(name){
+  if(!confirm(`Remove "${name}"?`))return;
+  const t=state.teams.find(t=>t.name===name);
+  if(t)t.players.forEach(p=>{const pl=state.players.find(x=>x.name===p.name);if(pl){pl.soldTo=null;pl.price=null;pl.time=null;}});
+  state.teams=state.teams.filter(t=>t.name!==name);
+  state.sales=state.sales.filter(s=>s.team!==name);
+  if(state.myTeam===name)state.myTeam='';
+  renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+}
+function startEditTeam(name){
+  const t=state.teams.find(x=>x.name===name);if(!t)return;
+  const row=document.getElementById('tr-'+btoa(unescape(encodeURIComponent(name))));
+  if(!row)return;
+  row.innerHTML=`<input id="et-n" style="width:100px;" value="${esc(t.name)}">
+    <input id="et-m" type="number" style="width:45px;" value="${t.minSquad}" min="1">
+    <button class="btn btn-primary btn-sm" onclick="saveEditTeam('${esc(name)}')">Save</button>
+    <button class="btn btn-ghost btn-sm" onclick="renderTeamSetupList()">✕</button>`;
+}
+function saveEditTeam(old){
+  const nn=(document.getElementById('et-n')||{}).value?.trim();
+  const nm=parseInt((document.getElementById('et-m')||{}).value)||11;
+  if(!nn)return;
+  if(nn!==old&&state.teams.find(t=>t.name.toLowerCase()===nn.toLowerCase())){alert('Name exists');return;}
+  const t=state.teams.find(x=>x.name===old);if(!t)return;
+  state.players.forEach(p=>{if(p.soldTo===old)p.soldTo=nn;});
+  state.sales.forEach(s=>{if(s.team===old)s.team=nn;});
+  if(state.myTeam===old)state.myTeam=nn;
+  t.name=nn;t.minSquad=nm;
+  state.teams.sort((a,b)=>a.name.localeCompare(b.name));
+  renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+}
+function renderTeamSetupList(){
+  const el=document.getElementById('teamSetupList');
+  if(!state.teams.length){el.innerHTML='<p style="color:var(--muted);font-size:11px;margin-top:5px;">No teams yet.</p>';return;}
+  el.innerHTML=state.teams.map(t=>`
+    <div class="rival-row">
+      <div id="tr-${btoa(unescape(encodeURIComponent(t.name)))}" style="display:flex;align-items:center;gap:5px;flex:1;font-size:11px;">
+        <b>${t.name}</b>
+        <span style="color:var(--muted);">₹${t.startCredits}L · min ${t.minSquad}</span>
+        ${t.name===state.myTeam?'<span class="my-team-badge">YOU</span>':''}
+      </div>
+      <button class="btn btn-tiny" onclick="startEditTeam('${esc(t.name)}')">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="removeTeam('${esc(t.name)}')">✕</button>
+    </div>`).join('');
+}
+
+// ── PLAYERS ────────────────────────────────────────────────
+function importPlayers(){
+  const raw=document.getElementById('playerCSV').value.trim();
+  if(!raw){showMsg('playerImportMsg','Paste CSV');return;}
+  let added=0,skip=0;
+  raw.split('\n').map(l=>l.trim()).filter(l=>l).forEach(line=>{
+    const p=line.split(',').map(s=>s.trim());
+    if(!p[0]){skip++;return;}
+    const name=p[0],role=(p[1]||'BAT').toUpperCase(),base=parseFloat(p[2])||0;
+    if(state.players.find(x=>x.name.toLowerCase()===name.toLowerCase())){skip++;return;}
+    state.players.push({name,role,basePrice:base,soldTo:null,price:null,time:null,star:false});
+    added++;
+  });
+  showMsg('playerImportMsg',`Added ${added}, skipped ${skip}.`,'success');
+  document.getElementById('playerCount').textContent=`Total: ${state.players.length}`;
+  renderPlayerEditList();renderAllPlayers();
+}
+function clearPlayers(){
+  if(!confirm('Clear all players and sales?'))return;
+  state.players=[];state.sales=[];
+  state.teams.forEach(t=>{t.players=[];t.credits=t.startCredits;});
+  renderPlayerEditList();renderAllPlayers();renderDashboard();
+  document.getElementById('playerCount').textContent='';
+}
+function renderPlayerEditList(){
+  const el=document.getElementById('playerEditList');
+  if(!state.players.length){el.innerHTML='<p style="color:var(--muted);font-size:11px;">No players. Import above.</p>';return;}
+  el.innerHTML=`<table class="player-table">
+    <thead><tr><th>★</th><th>Name</th><th>Role</th><th>Base</th><th>Status</th><th></th></tr></thead>
+    <tbody>${[...state.players].sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`
+      <tr class="${p.star?'star-row':''}">
+        <td><span class="star ${p.star?'lit':''}" onclick="toggleStar('${esc(p.name)}',this)">★</span></td>
+        <td style="font-size:11px;">${p.name}</td>
+        <td><span class="role-badge ${rc(p.role)}">${p.role}</span></td>
+        <td class="base-price">${p.basePrice?'₹'+p.basePrice+'L':'-'}</td>
+        <td>${p.soldTo?`<span class="tag-sold">${p.soldTo}</span>`:`<span class="tag-free">FREE</span>`}</td>
+        <td><button class="btn btn-tiny" onclick="openEditPlayer('${esc(p.name)}')">✏️</button></td>
+      </tr>`).join('')}
+    </tbody></table>`;
+}
+function toggleStar(name,el){
+  const p=state.players.find(x=>x.name===name);if(!p)return;
+  p.star=!p.star;el.classList.toggle('lit',p.star);
+  // sync to team players
+  state.teams.forEach(t=>{const tp=t.players.find(x=>x.name===name);if(tp)tp.star=p.star;});
+  renderAllPlayers();renderRecentSales();renderDashboard();
+}
+function openEditPlayer(name){
+  const p=state.players.find(x=>x.name===name);if(!p)return;
+  editingOrig=name;
+  document.getElementById('editPlayerName').value=p.name;
+  document.getElementById('editPlayerRole').value=p.role;
+  document.getElementById('editPlayerBase').value=p.basePrice||'';
+  openModal('editPlayerModal');
+}
+function saveEditPlayer(){
+  const p=state.players.find(x=>x.name===editingOrig);if(!p)return;
+  const nn=document.getElementById('editPlayerName').value.trim();
+  const nr=document.getElementById('editPlayerRole').value;
+  const nb=parseFloat(document.getElementById('editPlayerBase').value)||0;
+  if(!nn){alert('Name required');return;}
+  if(nn!==editingOrig&&state.players.find(x=>x.name.toLowerCase()===nn.toLowerCase())){alert('Name exists');return;}
+  if(p.soldTo){
+    const team=state.teams.find(t=>t.name===p.soldTo);
+    if(team){const tp=team.players.find(x=>x.name===editingOrig);if(tp){tp.name=nn;tp.role=nr;}}
+  }
+  state.sales.forEach(s=>{if(s.player===editingOrig){s.player=nn;s.role=nr;}});
+  p.name=nn;p.role=nr;p.basePrice=nb;
+  closeModal('editPlayerModal');
+  renderPlayerEditList();renderAllPlayers();renderDashboard();renderRecentSales();
+}
+
+// ── AUTOCOMPLETE ───────────────────────────────────────────
+function filterPlayerAC(){
+  const val=document.getElementById('playerInput').value.toLowerCase();
+  const drop=document.getElementById('playerDrop');
+  const avail=state.players.filter(p=>!p.soldTo&&(!val||p.name.toLowerCase().includes(val)))
+    .sort((a,b)=>{if(b.star!==a.star)return b.star-a.star;return a.name.localeCompare(b.name);});
+  if(!avail.length){drop.style.display='none';return;}
+  drop.innerHTML=avail.map(p=>`
+    <div class="autocomplete-item ${p.star?'is-star':''}" onclick="selectPlayer('${esc(p.name)}')">
+      <span class="star ${p.star?'lit':''}">★</span>
+      <b>${p.name}</b>
+      <span class="role-badge ${rc(p.role)}">${p.role}</span>
+      ${p.basePrice?`<span class="base-price">₹${p.basePrice}L</span>`:''}
+    </div>`).join('');
+  drop.style.display='block';
+}
+function selectPlayer(name){
+  document.getElementById('playerInput').value=name;
+  document.getElementById('playerDrop').style.display='none';
+  showPlayerStrip(name);renderBidChips();
+}
+function showPlayerStrip(name){
+  const p=state.players.find(x=>x.name===name);
+  const el=document.getElementById('playerInfoStrip');
+  if(!p){el.innerHTML='';return;}
+  el.innerHTML=`<div style="background:var(--surface2);border:1px solid ${p.star?'var(--accent)':'var(--border)'};border-radius:4px;padding:6px 10px;margin-bottom:6px;display:flex;gap:10px;align-items:center;font-size:11px;">
+    <span class="star ${p.star?'lit':''}" style="font-size:16px;">★</span>
+    <b style="font-size:13px;">${p.name}</b>
+    <span class="role-badge ${rc(p.role)}">${p.role}</span>
+    ${p.basePrice?`<span>Base: <b style="color:var(--accent);">₹${p.basePrice}L</b></span>`:''}
+    ${p.star?'<span style="color:var(--accent);font-size:10px;font-weight:700;">⭐ STAR PLAYER — Go for it!</span>':''}
+  </div>`;
+}
+function filterTeamAC(){
+  const val=document.getElementById('teamInput').value.toLowerCase();
+  const drop=document.getElementById('teamDrop');
+  const avail=state.teams.filter(t=>!val||t.name.toLowerCase().includes(val))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  if(!avail.length){drop.style.display='none';return;}
+  drop.innerHTML=avail.map(t=>{
+    const p=pct(t),col=fundCol(p),isMe=t.name===state.myTeam;
+    return `<div class="autocomplete-item" onclick="selectTeam('${esc(t.name)}')">
+      ${isMe?'<span class="my-team-badge">YOU</span>':''}
+      <b>${t.name}</b>
+      <span style="color:${col};font-size:10px;">₹${t.credits}L (${p}%)</span>
+    </div>`;}).join('');
+  drop.style.display='block';
+}
+function selectTeam(name){
+  document.getElementById('teamInput').value=name;
+  document.getElementById('teamDrop').style.display='none';
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.autocomplete-wrap'))
+    document.querySelectorAll('.autocomplete-list').forEach(d=>d.style.display='none');
+});
+
+// ── BID CHIPS ──────────────────────────────────────────────
+function renderBidChips(){
+  const cur=parseFloat(document.getElementById('saleAmount').value)||0;
+  document.getElementById('bidChips').innerHTML=[5,10,25,50,75,100].map(c=>
+    `<span class="bid-chip" onclick="setBid(${cur+c})">+${c} → ₹${cur+c}L</span>`).join('');
+}
+function setBid(v){document.getElementById('saleAmount').value=v;renderBidChips();}
+
+// ── RECORD SALE ────────────────────────────────────────────
+function recordSale(){
+  const pn=document.getElementById('playerInput').value.trim();
+  const amt=parseFloat(document.getElementById('saleAmount').value);
+  const tn=document.getElementById('teamInput').value.trim();
+  if(!pn){showMsg('saleMsg','Enter player name');return;}
+  if(isNaN(amt)||amt<0){showMsg('saleMsg','Enter valid amount');return;}
+  if(!tn){showMsg('saleMsg','Enter team name');return;}
+  const player=state.players.find(p=>p.name.toLowerCase()===pn.toLowerCase());
+  if(!player){showMsg('saleMsg','Player not found');return;}
+  if(player.soldTo){showMsg('saleMsg',`${player.name} already sold to ${player.soldTo}`);return;}
+  const team=state.teams.find(t=>t.name.toLowerCase()===tn.toLowerCase());
+  if(!team){showMsg('saleMsg','Team not found');return;}
+  if(team.credits<amt){showMsg('saleMsg',`${team.name} only has ₹${team.credits}L`);return;}
+  const ts=now();
+  player.soldTo=team.name;player.price=amt;player.time=ts;
+  team.credits-=amt;
+  team.players.push({name:player.name,role:player.role,price:amt,time:ts,star:player.star});
+  state.sales.unshift({player:player.name,role:player.role,team:team.name,amount:amt,basePrice:player.basePrice||0,time:ts,star:player.star});
+  showMsg('saleMsg',`✅ ${player.name} → ${team.name} for ₹${amt}L`,'success');
+  resetSaleForm();renderDashboard();renderRecentSales();renderAllPlayers();
+}
+function resetSaleForm(){
+  ['playerInput','saleAmount','teamInput'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('playerInfoStrip').innerHTML='';
+  document.getElementById('bidChips').innerHTML='';
+}
+
+// ── RELEASE ────────────────────────────────────────────────
+function releasePlayer(tn,pn){
+  if(!confirm(`Release ${pn} from ${tn}?\n50% refund will be credited.`))return;
+  const team=state.teams.find(t=>t.name===tn);
+  const player=state.players.find(p=>p.name===pn);
+  if(!team||!player)return;
+  const refund=Math.floor(player.price/2);
+  team.credits+=refund;
+  team.players=team.players.filter(p=>p.name!==pn);
+  player.soldTo=null;player.price=null;player.time=null;
+  state.sales=state.sales.filter(s=>!(s.player===pn&&s.team===tn));
+  renderDashboard();renderAllPlayers();renderRecentSales();
+  alert(`${pn} released. ₹${refund}L refunded to ${tn}.`);
+}
+
+// ── RECENT SALES ───────────────────────────────────────────
+function renderRecentSales(){
+  const tb=document.querySelector('#recentSaleTable tbody');
+  if(!state.sales.length){tb.innerHTML='<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:10px;">No sales yet</td></tr>';return;}
+  tb.innerHTML=state.sales.slice(0,20).map((s,i)=>{
+    const over=s.basePrice&&s.amount>s.basePrice;
+    const isMe=s.team===state.myTeam;
+    return `<tr class="${s.star?'star-row':''}">
+      <td><span class="star ${s.star?'lit':''}">★</span></td>
+      <td style="color:var(--muted)">${state.sales.length-i}</td>
+      <td><b>${s.player}</b></td>
+      <td><span class="role-badge ${rc(s.role)}">${s.role}</span></td>
+      <td ${isMe?'style="color:var(--accent);font-weight:600;"':''}>${s.team}${isMe?' ⭐':''}</td>
+      <td style="color:var(--accent);font-weight:600;">₹${s.amount}L</td>
+      <td class="base-price">${s.basePrice?`₹${s.basePrice}L${over?` <span style="color:var(--red);font-size:8px;">+${s.amount-s.basePrice}</span>`:''}`:`-`}</td>
+      <td class="timestamp">${s.time}</td>
+    </tr>`;}).join('');
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────
+function renderDashboard(){renderFundChart();renderTeamGrid();}
+
+function renderFundChart(){
+  const el=document.getElementById('fundChart');
+  const sorted=[...state.teams].sort((a,b)=>a.name.localeCompare(b.name));
+  if(!sorted.length){el.innerHTML='<p style="color:var(--muted);font-size:11px;">No teams yet.</p>';return;}
+  el.innerHTML=sorted.map(t=>{
+    const p=pct(t),col=fundCol(p),isMe=t.name===state.myTeam;
+    return `<div class="chart-bar-row">
+      <div class="chart-label ${isMe?'my-label':''}" title="${t.name}">${isMe?'⭐':''} ${t.name}</div>
+      <div class="chart-bar-bg">
+        <div class="chart-bar-fill" style="width:${p}%;background:${col};"></div>
+      </div>
+      <div class="chart-val" style="color:${col};">${p}% &nbsp;₹${t.credits}L</div>
+    </div>`;}).join('');
+}
+
+function renderTeamGrid(){
+  const el=document.getElementById('teamGrid');
+  const sorted=[...state.teams].sort((a,b)=>a.name.localeCompare(b.name));
+  if(!sorted.length){el.innerHTML='<p style="color:var(--muted);padding:8px;">Go to Setup to add teams.</p>';return;}
+  el.innerHTML=sorted.map(t=>{
+    const p=pct(t),col=fundCol(p),isMe=t.name===state.myTeam;
+    const rc2={BAT:0,BOWL:0,ALL:0,WK:0};
+    t.players.forEach(x=>{if(rc2[x.role]!==undefined)rc2[x.role]++;});
+    const slots=t.minSquad-t.players.length;
+    const avg=slots>0?Math.floor(t.credits/slots):0;
+    const tags=t.players.map(x=>`
+      <span class="player-tag ${x.star?'star-tag':''}">
+        ${x.star?'<span class="star lit" style="font-size:9px;">★</span>':''}
+        ${x.name}<span class="role-badge ${rc(x.role)}">${x.role}</span>
+        <span class="ptag-price">₹${x.price}L</span>
+        <span class="release-btn" onclick="releasePlayer('${esc(t.name)}','${esc(x.name)}')">↩</span>
+      </span>`).join('');
+    return `<div class="team-card ${isMe?'is-my-team':''}">
+      <div class="team-card-header">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span class="team-name">${t.name}</span>
+          ${isMe?'<span class="my-team-badge">YOU</span>':''}
+        </div>
+        <span class="team-credits">₹<b>${t.credits}</b>L</span>
+      </div>
+      <div class="fund-bar-bg"><div class="fund-bar-fill" style="width:${p}%;background:${col};"></div></div>
+      <div class="fund-bar-label">
+        <span style="color:${col};">${p}% avail</span>
+        <span>${t.players.length}/${t.minSquad} · ₹${avg}L/slot</span>
+      </div>
+      <div class="role-summary">
+        <span class="role-pill" style="border-color:#1a3a5c;color:#58a6ff;">BAT:${rc2.BAT}</span>
+        <span class="role-pill" style="border-color:#3a1a1a;color:#f85149;">BOWL:${rc2.BOWL}</span>
+        <span class="role-pill" style="border-color:#1a3a1a;color:#3fb950;">ALL:${rc2.ALL}</span>
+        <span class="role-pill" style="border-color:#3a2a1a;color:#f0a500;">WK:${rc2.WK}</span>
+      </div>
+      <div class="team-players" style="margin-top:4px;">${tags||'<span style="color:var(--muted);font-size:10px;">No players</span>'}</div>
+    </div>`;}).join('');
+}
+
+// ── ALL PLAYERS ────────────────────────────────────────────
+function renderAllPlayers(){
+  const sold=state.players.filter(p=>p.soldTo);
+  const unsold=state.players.filter(p=>!p.soldTo);
+  document.getElementById('soldCount').textContent=sold.length;
+  document.getElementById('unsoldCount').textContent=unsold.length;
+
+  document.querySelector('#soldTable tbody').innerHTML=sold.length
+    ?sold.sort((a,b)=>{if(b.star!==a.star)return b.star-a.star;return a.name.localeCompare(b.name);}).map(p=>`
+      <tr class="sold-row ${p.star?'star-row':''}">
+        <td><span class="star ${p.star?'lit':''}">★</span></td>
+        <td><b>${p.name}</b></td>
+        <td><span class="role-badge ${rc(p.role)}">${p.role}</span></td>
+        <td class="base-price">${p.basePrice?'₹'+p.basePrice+'L':'-'}</td>
+        <td style="color:${p.soldTo===state.myTeam?'var(--accent)':'var(--green)'};">${p.soldTo}${p.soldTo===state.myTeam?' ⭐':''}</td>
+        <td style="color:var(--accent);font-weight:600;">₹${p.price}L</td>
+        <td class="timestamp">${p.time}</td>
+      </tr>`).join('')
+    :'<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:10px;">No sold players</td></tr>';
+
+  document.querySelector('#unsoldTable tbody').innerHTML=unsold.length
+    ?unsold.sort((a,b)=>{if(b.star!==a.star)return b.star-a.star;return a.name.localeCompare(b.name);}).map(p=>`
+      <tr class="${p.star?'star-row':''}">
+        <td><span class="star ${p.star?'lit':''}" onclick="toggleStar('${esc(p.name)}',this)">★</span></td>
+        <td>${p.name}</td>
+        <td><span class="role-badge ${rc(p.role)}">${p.role}</span></td>
+        <td class="base-price">${p.basePrice?'₹'+p.basePrice+'L':'-'}</td>
+        <td><button class="btn btn-tiny" onclick="openEditPlayer('${esc(p.name)}')">✏️</button></td>
+      </tr>`).join('')
+    :'<tr><td colspan="5" style="color:var(--muted);text-align:center;padding:10px;">All sold!</td></tr>';
+}
+
+// ── STRATEGY ───────────────────────────────────────────────
+function renderStrategy(){
+  const el=document.getElementById('strategyContent');
+  if(!state.myTeam){
+    el.innerHTML='<div class="panel"><p style="color:var(--muted);">Go to Setup → select your team first.</p></div>';return;
+  }
+  const me=state.teams.find(t=>t.name===state.myTeam);
+  if(!me){el.innerHTML='<div class="panel"><p style="color:var(--muted);">Team not found.</p></div>';return;}
+
+  const rivals=state.teams.filter(t=>t.name!==state.myTeam).sort((a,b)=>a.name.localeCompare(b.name));
+  const myPct=pct(me);
+  const myRC={BAT:0,BOWL:0,ALL:0,WK:0};
+  me.players.forEach(p=>{if(myRC[p.role]!==undefined)myRC[p.role]++;});
+  const slots=me.minSquad-me.players.length;
+  const avgSlot=slots>0?Math.floor(me.credits/slots):0;
+  const starsLeft=state.players.filter(p=>p.star&&!p.soldTo).length;
+  const myWeak=Object.entries(myRC).filter(([r,c])=>c===0).map(([r])=>r);
+  const broke=rivals.filter(t=>pct(t)<25);
+
+  const rivalAnalysis=rivals.map(t=>{
+    const p=pct(t),col=fundCol(p);
+    const sl=t.minSquad-t.players.length;
+    const av=sl>0?Math.floor(t.credits/sl):0;
+    const tight=sl>2&&t.credits<avgSlot*sl*0.7;
+    const tRC={BAT:0,BOWL:0,ALL:0,WK:0};
+    t.players.forEach(x=>{if(tRC[x.role]!==undefined)tRC[x.role]++;});
+    const weak=Object.entries(tRC).filter(([r,c])=>c===0).map(([r])=>r);
+    return {name:t.name,p,col,credits:t.credits,sl,av,tight,weak};
+  });
+
+  el.innerHTML=`
+  <div class="panel">
+    <div class="panel-title">⭐ Your Status — ${me.name}</div>
+    <div class="strategy-grid">
+      <div class="sc"><div class="sc-title">Budget Left</div><div class="sc-val" style="color:${fundCol(myPct)};">₹${me.credits}L</div><div class="sc-sub">${myPct}% of ₹${me.startCredits}L</div></div>
+      <div class="sc"><div class="sc-title">Slots Left</div><div class="sc-val" style="color:var(--blue);">${slots}</div><div class="sc-sub">Min ${me.minSquad} · Have ${me.players.length}</div></div>
+      <div class="sc"><div class="sc-title">Max per Slot</div><div class="sc-val" style="color:var(--accent);">₹${avgSlot}L</div><div class="sc-sub">Don't overpay beyond this</div></div>
+      <div class="sc"><div class="sc-title">⭐ Stars in Pool</div><div class="sc-val" style="color:var(--accent);">${starsLeft}</div><div class="sc-sub">Unsold star players</div></div>
+    </div>
+    ${myWeak.length?`<div style="margin-top:6px;padding:6px 10px;background:rgba(248,81,73,0.08);border:1px solid var(--red);border-radius:4px;font-size:11px;">
+      ⚠️ <b>Missing roles:</b> ${myWeak.map(r=>`<span class="role-badge ${rc(r)}">${r}</span>`).join(' ')} — prioritize these!
+    </div>`:'<div style="margin-top:6px;padding:5px 10px;background:rgba(63,185,80,0.08);border:1px solid var(--green);border-radius:4px;font-size:11px;">✅ You have players in every role.</div>'}
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">👥 Your Squad</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+      ${me.players.length?me.players.map(p=>`
+        <span class="player-tag ${p.star?'star-tag':''}">
+          ${p.star?'<span class="star lit" style="font-size:10px;">★</span> ':''}<b>${p.name}</b>
+          <span class="role-badge ${rc(p.role)}">${p.role}</span>
+          <span class="ptag-price">₹${p.price}L</span>
+          <span class="release-btn" onclick="releasePlayer('${esc(me.name)}','${esc(p.name)}')">↩</span>
+        </span>`).join('')
+      :'<span style="color:var(--muted);font-size:11px;">No players yet</span>'}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🔍 Rival Budget — Live</div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:6px;">🟢 Flush = avoid bidding war &nbsp;|&nbsp; 🔴 Tight = push them to overspend</p>
+    ${rivalAnalysis.map(r=>`
+      <div class="rival-row">
+        <div style="width:100px;font-size:11px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.name}</div>
+        <div style="flex:1;padding:0 6px;"><div style="background:var(--border);border-radius:2px;height:8px;overflow:hidden;"><div style="width:${r.p}%;height:100%;background:${r.col};border-radius:2px;"></div></div></div>
+        <span style="color:${r.col};font-size:10px;width:65px;">₹${r.credits}L ${r.p}%</span>
+        <span style="font-size:10px;color:var(--muted);width:55px;">${r.sl} slots</span>
+        <span style="font-size:10px;color:var(--muted);width:55px;">~₹${r.av}L/slot</span>
+        ${r.tight?'<span style="color:var(--red);font-size:9px;font-weight:700;">⚠ SQUEEZE</span>':'<span style="font-size:9px;color:var(--green);">OK</span>'}
+      </div>`).join('')||'<p style="color:var(--muted);font-size:11px;">No rivals yet.</p>'}
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">🎯 Rival Role Gaps — Exploit!</div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:5px;">Rivals missing a role MUST buy that type. If they're also low on funds → they'll overpay. Let them!</p>
+    ${rivalAnalysis.filter(r=>r.weak.length).map(r=>`
+      <div class="rival-row">
+        <span style="font-size:11px;font-weight:600;width:110px;">${r.name}</span>
+        <span>Needs: ${r.weak.map(w=>`<span class="role-badge ${rc(w)}">${w}</span>`).join(' ')}</span>
+        <span style="color:${r.col};font-size:10px;margin-left:6px;">₹${r.credits}L (${r.p}%)</span>
+        ${r.tight?'<span style="color:var(--red);font-size:9px;font-weight:700;">🔥 TRAP</span>':''}
+      </div>`).join('')||'<p style="color:var(--muted);font-size:11px;">No rival role gaps detected yet.</p>'}
+  </div>
+
+  ${broke.length?`<div class="panel" style="border-color:var(--green);">
+    <div class="panel-title">💡 Free Runs — Rivals Almost Broke (&lt;25%)</div>
+    <p style="font-size:10px;color:var(--muted);margin-bottom:5px;">These teams can't outbid you. Bid freely on any player when only they compete.</p>
+    ${broke.map(t=>`<div class="rival-row"><b>${t.name}</b><span style="color:var(--red);">₹${t.credits}L (${pct(t)}% left)</span></div>`).join('')}
+  </div>`:''}
+
+  <div class="panel">
+    <div class="panel-title">⭐ Star Players Still Up for Grabs</div>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;">
+      ${state.players.filter(p=>p.star&&!p.soldTo).length
+        ?state.players.filter(p=>p.star&&!p.soldTo).sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`
+          <span class="player-tag star-tag">
+            <span class="star lit" style="font-size:10px;">★</span> <b>${p.name}</b>
+            <span class="role-badge ${rc(p.role)}">${p.role}</span>
+            ${p.basePrice?`<span class="ptag-price">₹${p.basePrice}L</span>`:''}
+          </span>`).join('')
+        :'<span style="color:var(--muted);font-size:11px;">None left — or mark stars in Setup/Players tab.</span>'}
+    </div>
+  </div>`;
+}
+
+// ── INIT ───────────────────────────────────────────────────
+renderTeamSetupList();refreshMyTeamSelect();
+renderDashboard();renderRecentSales();renderAllPlayers();renderBidChips();
+</script>
+</body>
+</html>
