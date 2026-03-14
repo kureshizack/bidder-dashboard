@@ -7,105 +7,109 @@
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0c1018;--surface:#141a24;--surface2:#1b2333;--surface3:#222d40;
-  --border:#2a3448;--accent:#f0a500;--text:#dce6f0;--muted:#6b7a90;
-  --green:#3fb950;--yellow:#d29922;--red:#f85149;--blue:#58a6ff;--purple:#bc8cff;
+  --bg:#111827;--surface:#1f2937;--surface2:#27364b;--surface3:#2e3f56;
+  --border:#3d5068;--accent:#f59e0b;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#22c55e;--yellow:#eab308;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh;}
-.header{background:var(--surface);border-bottom:2px solid var(--accent);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;}
-h1{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--accent);letter-spacing:1px;}
-.header-right{display:flex;gap:6px;align-items:center;}
-.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 14px;overflow-x:auto;}
-.tab{padding:8px 13px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.4px;transition:all 0.2s;white-space:nowrap;}
+body{font-family:'Noto Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;min-height:100vh;}
+.header{background:var(--surface);border-bottom:2px solid var(--accent);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
+h1{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--accent);letter-spacing:1px;}
+.header-right{display:flex;gap:8px;align-items:center;}
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;overflow-x:auto;}
+.tab{padding:12px 16px;cursor:pointer;border-bottom:3px solid transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;letter-spacing:0.4px;transition:all 0.2s;white-space:nowrap;}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
 .tab:hover:not(.active){color:var(--text);}
-.tab-content{display:none;padding:11px 13px;}
+.tab-content{display:none;padding:16px 18px;}
 .tab-content.active{display:block;}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px;}
-.panel-title{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
-input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 8px;border-radius:4px;font-family:'Noto Sans',sans-serif;font-size:12px;outline:none;width:100%;}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.panel-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;color:var(--accent);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;}
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:5px;font-family:'Noto Sans',sans-serif;font-size:14px;outline:none;width:100%;}
 input:focus,select:focus,textarea:focus{border-color:var(--accent);}
-.form-row{display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;}
-.form-group{display:flex;flex-direction:column;gap:3px;}
-.form-group label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;}
-.btn{padding:5px 12px;border-radius:4px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:12px;transition:all 0.15s;white-space:nowrap;}
-.btn-primary{background:var(--accent);color:#000;}.btn-primary:hover{background:#f5b800;}
+.form-row{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;font-weight:600;}
+.btn{padding:8px 16px;border-radius:5px;border:none;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;transition:all 0.15s;white-space:nowrap;}
+.btn-primary{background:var(--accent);color:#000;}.btn-primary:hover{background:#fbbf24;}
 .btn-danger{background:var(--red);color:#fff;}.btn-danger:hover{filter:brightness(1.2);}
 .btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border);}.btn-ghost:hover{color:var(--text);}
-.btn-sm{padding:2px 7px;font-size:10px;}
-.btn-sale{padding:10px 28px;font-size:17px;font-weight:700;background:var(--green);color:#000;border-radius:6px;}.btn-sale:hover{background:#4fd060;}
-.btn-tiny{padding:1px 5px;font-size:10px;background:var(--surface3);color:var(--muted);border:1px solid var(--border);border-radius:3px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;}.btn-tiny:hover{color:var(--text);}
-.my-team-badge{background:var(--accent);color:#000;border-radius:3px;padding:1px 5px;font-size:9px;font-weight:700;margin-left:4px;}
-.team-card.is-my-team{border-color:var(--accent);}
+.btn-sm{padding:5px 10px;font-size:13px;}
+.btn-sale{padding:12px 32px;font-size:18px;font-weight:700;background:var(--green);color:#000;border-radius:7px;}.btn-sale:hover{background:#4ade80;}
+.btn-tiny{padding:3px 8px;font-size:12px;background:var(--surface3);color:var(--muted);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:600;}.btn-tiny:hover{color:var(--text);}
+.my-team-badge{background:var(--accent);color:#000;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:700;margin-left:5px;}
+.team-card.is-my-team{border-color:var(--accent);border-width:2px;}
 .team-card.is-my-team .team-name{color:var(--accent);}
 .autocomplete-wrap{position:relative;}
-.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-top:none;border-radius:0 0 4px 4px;z-index:200;max-height:200px;overflow-y:auto;}
-.autocomplete-item{padding:5px 10px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:5px;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--surface2);border:1px solid var(--accent);border-top:none;border-radius:0 0 5px 5px;z-index:200;max-height:220px;overflow-y:auto;}
+.autocomplete-item{padding:8px 12px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;}
 .autocomplete-item:hover{background:var(--surface3);color:var(--accent);}
-.autocomplete-item.is-star{background:rgba(240,165,0,0.05);}
-.star{color:#444;cursor:pointer;font-size:13px;line-height:1;}.star.lit{color:var(--accent);}
-.role-badge{font-size:9px;border-radius:2px;padding:1px 4px;margin-left:2px;font-weight:600;}
-.role-BAT{background:#1a3a5c;color:#58a6ff;}.role-BOWL{background:#3a1a1a;color:#f85149;}
-.role-ALL{background:#1a3a1a;color:#3fb950;}.role-WK{background:#3a2a1a;color:#f0a500;}
-.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;}
-.team-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:9px 11px;}
-.team-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
-.team-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:14px;}
-.team-credits{font-size:11px;color:var(--muted);}
-.fund-bar-bg{background:var(--border);border-radius:3px;height:7px;width:100%;overflow:hidden;margin:3px 0;}
-.fund-bar-fill{height:100%;border-radius:3px;transition:width 0.4s ease;}
-.fund-bar-label{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:4px;}
-.team-players{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px;}
-.player-tag{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:3px;padding:2px 5px;font-size:10px;}
-.player-tag.star-tag{border-color:var(--accent);background:rgba(240,165,0,0.06);}
-.ptag-price{color:var(--accent);margin-left:3px;font-weight:600;}
-.release-btn{color:var(--red);cursor:pointer;margin-left:3px;font-size:9px;opacity:0.7;}.release-btn:hover{opacity:1;}
-.role-summary{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;}
-.role-pill{font-size:9px;padding:1px 5px;border-radius:10px;border:1px solid var(--border);color:var(--muted);}
-.player-table{width:100%;border-collapse:collapse;font-size:11px;}
-.player-table th{background:var(--surface);color:var(--muted);text-transform:uppercase;font-size:9px;letter-spacing:0.4px;padding:5px 7px;text-align:left;border-bottom:1px solid var(--border);font-family:'Rajdhani',sans-serif;}
-.player-table td{padding:4px 7px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.autocomplete-item.is-star{background:rgba(245,158,11,0.07);}
+.star{color:#4a5568;cursor:pointer;font-size:15px;line-height:1;}.star.lit{color:var(--accent);}
+.role-badge{font-size:11px;border-radius:3px;padding:2px 6px;margin-left:3px;font-weight:700;}
+.role-BAT{background:#1e3a5f;color:#93c5fd;}.role-BOWL{background:#3f1515;color:#fca5a5;}
+.role-ALL{background:#14391f;color:#86efac;}.role-WK{background:#3d2608;color:#fcd34d;}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.team-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.team-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.team-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:17px;}
+.team-credits{font-size:13px;color:var(--muted);}
+.fund-bar-bg{background:var(--border);border-radius:4px;height:8px;width:100%;overflow:hidden;margin:4px 0;}
+.fund-bar-fill{height:100%;border-radius:4px;transition:width 0.4s ease;}
+.fund-bar-label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;}
+.team-players{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px;}
+.player-tag{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:3px 7px;font-size:12px;}
+.player-tag.star-tag{border-color:var(--accent);background:rgba(245,158,11,0.08);}
+.ptag-price{color:var(--accent);margin-left:4px;font-weight:700;}
+.release-btn{color:var(--red);cursor:pointer;margin-left:4px;font-size:11px;opacity:0.7;}.release-btn:hover{opacity:1;}
+.role-summary{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.role-pill{font-size:12px;padding:3px 9px;border-radius:12px;font-weight:700;letter-spacing:0.2px;}
+.role-pill-BAT{background:#1e3a5f;color:#93c5fd;border:1px solid #2d5490;}
+.role-pill-BOWL{background:#3f1515;color:#fca5a5;border:1px solid #6b2020;}
+.role-pill-ALL{background:#14391f;color:#86efac;border:1px solid #1e5c30;}
+.role-pill-WK{background:#3d2608;color:#fcd34d;border:1px solid #6b4010;}
+.player-table{width:100%;border-collapse:collapse;font-size:13px;}
+.player-table th{background:var(--surface);color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:0.4px;padding:7px 9px;text-align:left;border-bottom:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-weight:700;}
+.player-table td{padding:6px 9px;border-bottom:1px solid var(--border);vertical-align:middle;}
 .player-table tr:last-child td{border-bottom:none;}
 .player-table tr:hover td{background:var(--surface2);}
-.sold-row td:first-child{border-left:2px solid var(--green);}
-.star-row{background:rgba(240,165,0,0.03);}
-.chart-wrap{padding:3px 0;}
-.chart-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
-.chart-label{font-size:11px;color:var(--muted);width:110px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
-.chart-label.my-label{color:var(--accent);font-weight:600;}
-.chart-bar-bg{flex:1;background:var(--border);border-radius:3px;height:12px;overflow:hidden;}
-.chart-bar-fill{height:100%;border-radius:3px;transition:width 0.4s;}
-.chart-val{font-size:10px;width:80px;flex-shrink:0;text-align:right;}
-.strategy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;margin-bottom:8px;}
-.sc{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;}
-.sc-title{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;}
-.sc-val{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;}
-.sc-sub{font-size:9px;color:var(--muted);margin-top:2px;}
-.rival-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;gap:6px;}
+.sold-row td:first-child{border-left:3px solid var(--green);}
+.star-row{background:rgba(245,158,11,0.04);}
+.chart-wrap{padding:4px 0;}
+.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.chart-label{font-size:13px;color:var(--muted);width:120px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0;}
+.chart-label.my-label{color:var(--accent);font-weight:700;}
+.chart-bar-bg{flex:1;max-width:260px;background:var(--border);border-radius:4px;height:14px;overflow:hidden;}
+.chart-bar-fill{height:100%;border-radius:4px;transition:width 0.4s;}
+.chart-val{font-size:12px;width:90px;flex-shrink:0;text-align:right;font-weight:600;}
+.strategy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:10px;}
+.sc{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 13px;}
+.sc-title{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;font-weight:600;}
+.sc-val{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;}
+.sc-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.rival-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;gap:8px;}
 .rival-row:last-child{border-bottom:none;}
-.bid-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;}
-.bid-chip{background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:3px 8px;cursor:pointer;font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:600;color:var(--blue);}.bid-chip:hover{background:var(--blue);color:#000;}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.bid-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.bid-chip{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:5px 11px;cursor:pointer;font-size:13px;font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--blue);}.bid-chip:hover{background:var(--blue);color:#000;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:680px){.two-col{grid-template-columns:1fr;}}
-.section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid var(--border);}
-.timestamp{color:var(--muted);font-size:9px;}
-.base-price{color:var(--muted);font-size:10px;}
-.msg{padding:6px 10px;border-radius:4px;margin-bottom:6px;font-size:11px;}
-.msg-error{background:rgba(248,81,73,0.12);border:1px solid var(--red);color:var(--red);}
-.msg-success{background:rgba(63,185,80,0.1);border:1px solid var(--green);color:var(--green);}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;align-items:center;justify-content:center;}
+.section-title{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--accent);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.timestamp{color:var(--muted);font-size:11px;}
+.base-price{color:var(--muted);font-size:12px;}
+.msg{padding:8px 12px;border-radius:5px;margin-bottom:8px;font-size:13px;}
+.msg-error{background:rgba(239,68,68,0.12);border:1px solid var(--red);color:#fca5a5;}
+.msg-success{background:rgba(34,197,94,0.1);border:1px solid var(--green);color:#86efac;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;align-items:center;justify-content:center;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:280px;max-width:380px;width:90%;}
-.modal h3{font-family:'Rajdhani',sans-serif;font-size:16px;color:var(--accent);margin-bottom:12px;}
-.tag-sold{background:rgba(63,185,80,0.1);border:1px solid var(--green);color:var(--green);border-radius:3px;padding:0 4px;font-size:9px;}
-.tag-free{background:rgba(88,166,255,0.1);border:1px solid var(--blue);color:var(--blue);border-radius:3px;padding:0 4px;font-size:9px;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;min-width:300px;max-width:400px;width:90%;}
+.modal h3{font-family:'Rajdhani',sans-serif;font-size:18px;color:var(--accent);margin-bottom:14px;}
+.tag-sold{background:rgba(34,197,94,0.12);border:1px solid var(--green);color:#86efac;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;}
+.tag-free{background:rgba(96,165,250,0.12);border:1px solid var(--blue);color:#93c5fd;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;}
 @media print{
   .no-print,.tabs{display:none!important;}
   .tab-content{display:block!important;padding:0;}
   #tab-sale,#tab-players,#tab-strategy,#tab-setup{display:none!important;}
   #tab-dashboard{display:block!important;}
-  body{background:#fff;color:#000;font-size:11px;}
+  body{background:#fff;color:#000;font-size:12px;}
   .panel,.team-card{background:#fff!important;border:1px solid #ccc!important;break-inside:avoid;}
   .team-grid{grid-template-columns:repeat(3,1fr)!important;}
 }
@@ -114,31 +118,21 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 <body>
 
 <!-- ── PASSWORD GATE ── -->
-<div id="gate" style="
-  display:flex;align-items:center;justify-content:center;
-  position:fixed;inset:0;background:#0c1018;z-index:9999;
-  font-family:'Noto Sans',sans-serif;">
-  <div style="background:#141a24;border:1px solid #2a3448;border-radius:10px;padding:36px 40px;width:320px;text-align:center;">
-    <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#f0a500;margin-bottom:6px;">🏏 AUCTION COMMAND</div>
-    <div style="font-size:12px;color:#6b7a90;margin-bottom:24px;">Enter password to continue</div>
+<div id="gate" style="display:flex;align-items:center;justify-content:center;position:fixed;inset:0;background:#111827;z-index:9999;font-family:'Noto Sans',sans-serif;">
+  <div style="background:#1f2937;border:1px solid #3d5068;border-radius:12px;padding:40px 44px;width:340px;text-align:center;box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+    <div style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#f59e0b;margin-bottom:6px;">🏏 AUCTION COMMAND</div>
+    <div style="font-size:14px;color:#94a3b8;margin-bottom:28px;">Enter password to continue</div>
     <input id="gateInput" type="password" placeholder="Password"
-      style="background:#1b2333;border:1px solid #2a3448;color:#dce6f0;padding:9px 12px;
-             border-radius:5px;font-size:14px;outline:none;width:100%;margin-bottom:10px;text-align:center;"
+      style="background:#27364b;border:1px solid #3d5068;color:#f1f5f9;padding:11px 14px;border-radius:6px;font-size:15px;outline:none;width:100%;margin-bottom:12px;text-align:center;"
       onkeydown="if(event.key==='Enter')checkGate()"
       oninput="document.getElementById('gateErr').textContent=''">
-    <div id="gateErr" style="color:#f85149;font-size:11px;min-height:16px;margin-bottom:8px;"></div>
-    <button onclick="checkGate()"
-      style="width:100%;padding:9px;background:#f0a500;color:#000;border:none;border-radius:5px;
-             font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:0.5px;">
-      ENTER
-    </button>
+    <div id="gateErr" style="color:#fca5a5;font-size:13px;min-height:18px;margin-bottom:10px;"></div>
+    <button onclick="checkGate()" style="width:100%;padding:11px;background:#f59e0b;color:#000;border:none;border-radius:6px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;cursor:pointer;letter-spacing:0.5px;">ENTER</button>
   </div>
 </div>
 <script>
 (function(){
-  // ── Change this to your own password ──
-  var SECRET = "auctionxi2025";
-  // ─────────────────────────────────────
+  var SECRET="auctionxi2025"; // ← change this to your password
   if(sessionStorage.getItem('auc_auth')==='1'){
     document.getElementById('gate').style.display='none';
   }
@@ -153,10 +147,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
       document.getElementById('gateInput').focus();
     }
   };
-  setTimeout(function(){
-    var el=document.getElementById('gateInput');
-    if(el)el.focus();
-  },100);
+  setTimeout(function(){var el=document.getElementById('gateInput');if(el)el.focus();},100);
 })();
 </script>
 <!-- ── END PASSWORD GATE ── -->
@@ -308,7 +299,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
       </div>
       <div class="panel" style="border-color:var(--red);">
         <div class="panel-title" style="color:var(--red);">⚠️ Reset</div>
-        <p style="font-size:10px;color:var(--muted);margin-bottom:8px;">Wipes ALL data — teams, players, sales. Use at the start of a new auction.</p>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Wipes ALL data — teams, players, sales. Use at the start of a new auction.</p>
         <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset Everything</button>
       </div>
     </div>
@@ -341,14 +332,11 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 // ── STATE ──────────────────────────────────────────────────
 const STATE_KEY='auc_state_v1';
 function loadState(){
-  try{
-    const s=localStorage.getItem(STATE_KEY);
-    if(s) return JSON.parse(s);
-  }catch(e){}
+  try{const s=localStorage.getItem(STATE_KEY);if(s)return JSON.parse(s);}catch(e){}
   return null;
 }
 function saveState(){
-  try{ localStorage.setItem(STATE_KEY,JSON.stringify(state)); }catch(e){}
+  try{localStorage.setItem(STATE_KEY,JSON.stringify(state));}catch(e){}
 }
 const _saved=loadState();
 let state=_saved||{
@@ -358,10 +346,9 @@ let state=_saved||{
   myTeam:'',
   defaultCredits:1000
 };
-// Auto-save every 5 seconds + on tab close/hide
 setInterval(saveState,5000);
 window.addEventListener('beforeunload',saveState);
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden') saveState(); });
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveState();});
 let editingOrig=null;
 
 // ── UTILS ──────────────────────────────────────────────────
@@ -525,7 +512,6 @@ function renderPlayerEditList(){
 function toggleStar(name,el){
   const p=state.players.find(x=>x.name===name);if(!p)return;
   p.star=!p.star;el.classList.toggle('lit',p.star);
-  // sync to team players
   state.teams.forEach(t=>{const tp=t.players.find(x=>x.name===name);if(tp)tp.star=p.star;});
   renderAllPlayers();renderRecentSales();renderDashboard();
   saveState();
@@ -734,10 +720,10 @@ function renderTeamGrid(){
         <span>${t.players.length}/${t.minSquad} · ₹${avg}L/slot</span>
       </div>
       <div class="role-summary">
-        <span class="role-pill" style="border-color:#1a3a5c;color:#58a6ff;">BAT:${rc2.BAT}</span>
-        <span class="role-pill" style="border-color:#3a1a1a;color:#f85149;">BOWL:${rc2.BOWL}</span>
-        <span class="role-pill" style="border-color:#1a3a1a;color:#3fb950;">ALL:${rc2.ALL}</span>
-        <span class="role-pill" style="border-color:#3a2a1a;color:#f0a500;">WK:${rc2.WK}</span>
+        <span class="role-pill role-pill-BAT">🏏 BAT: ${rc2.BAT}</span>
+        <span class="role-pill role-pill-BOWL">🎳 BOWL: ${rc2.BOWL}</span>
+        <span class="role-pill role-pill-ALL">⚡ ALL: ${rc2.ALL}</span>
+        <span class="role-pill role-pill-WK">🧤 WK: ${rc2.WK}</span>
       </div>
       <div class="team-players" style="margin-top:4px;">${tags||'<span style="color:var(--muted);font-size:10px;">No players</span>'}</div>
     </div>`;}).join('');
@@ -888,7 +874,6 @@ function resetAll(){
 }
 
 // ── INIT ───────────────────────────────────────────────────
-// Restore UI elements that depend on saved state
 document.getElementById('headerMyTeam').textContent=state.myTeam?`⭐ ${state.myTeam}`:'';
 document.getElementById('playerCount').textContent=state.players.length?`Total: ${state.players.length}`:'';
 if(state.defaultCredits&&state.defaultCredits!==1000)
