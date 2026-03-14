@@ -113,6 +113,54 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 </head>
 <body>
 
+<!-- ── PASSWORD GATE ── -->
+<div id="gate" style="
+  display:flex;align-items:center;justify-content:center;
+  position:fixed;inset:0;background:#0c1018;z-index:9999;
+  font-family:'Noto Sans',sans-serif;">
+  <div style="background:#141a24;border:1px solid #2a3448;border-radius:10px;padding:36px 40px;width:320px;text-align:center;">
+    <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#f0a500;margin-bottom:6px;">🏏 AUCTION COMMAND</div>
+    <div style="font-size:12px;color:#6b7a90;margin-bottom:24px;">Enter password to continue</div>
+    <input id="gateInput" type="password" placeholder="Password"
+      style="background:#1b2333;border:1px solid #2a3448;color:#dce6f0;padding:9px 12px;
+             border-radius:5px;font-size:14px;outline:none;width:100%;margin-bottom:10px;text-align:center;"
+      onkeydown="if(event.key==='Enter')checkGate()"
+      oninput="document.getElementById('gateErr').textContent=''">
+    <div id="gateErr" style="color:#f85149;font-size:11px;min-height:16px;margin-bottom:8px;"></div>
+    <button onclick="checkGate()"
+      style="width:100%;padding:9px;background:#f0a500;color:#000;border:none;border-radius:5px;
+             font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:0.5px;">
+      ENTER
+    </button>
+  </div>
+</div>
+<script>
+(function(){
+  // ── Change this to your own password ──
+  var SECRET = "auctionxi2025";
+  // ─────────────────────────────────────
+  if(sessionStorage.getItem('auc_auth')==='1'){
+    document.getElementById('gate').style.display='none';
+  }
+  window.checkGate=function(){
+    var v=document.getElementById('gateInput').value;
+    if(v===SECRET){
+      sessionStorage.setItem('auc_auth','1');
+      document.getElementById('gate').style.display='none';
+    } else {
+      document.getElementById('gateErr').textContent='Incorrect password. Try again.';
+      document.getElementById('gateInput').value='';
+      document.getElementById('gateInput').focus();
+    }
+  };
+  setTimeout(function(){
+    var el=document.getElementById('gateInput');
+    if(el)el.focus();
+  },100);
+})();
+</script>
+<!-- ── END PASSWORD GATE ── -->
+
 <div class="header">
   <h1>🏏 AUCTION COMMAND</h1>
   <div class="header-right no-print">
