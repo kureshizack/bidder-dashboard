@@ -171,6 +171,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 
 <!-- DASHBOARD -->
 <div class="tab-content active" id="tab-dashboard">
+  <div id="auctionSummaryBar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;"></div>
   <div class="panel">
     <div class="panel-title">💰 Fund Overview</div>
     <div class="chart-wrap" id="fundChart"></div>
@@ -180,46 +181,63 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
 
 <!-- RECORD SALE -->
 <div class="tab-content" id="tab-sale">
-  <div class="panel">
+  <div class="panel" style="border-color:var(--accent);">
     <div class="panel-title">🔨 Record Player Sale</div>
     <div id="saleMsg"></div>
-    <div class="form-row" style="margin-bottom:7px;">
-      <div class="form-group" style="flex:2;min-width:130px;">
+
+    <!-- Row 1: Player + Team side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-group">
         <label>Player Name</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="playerInput" placeholder="Type player…" autocomplete="off"
-            oninput="filterPlayerAC()" onfocus="filterPlayerAC()">
+          <input type="text" id="playerInput" placeholder="Type to search…" autocomplete="off"
+            oninput="filterPlayerAC()" onfocus="filterPlayerAC()"
+            onkeydown="if(event.key==='Enter'){document.getElementById('teamInput').focus();}"
+            style="font-size:16px;padding:10px 12px;">
           <div class="autocomplete-list" id="playerDrop" style="display:none;"></div>
         </div>
       </div>
-      <div class="form-group" style="flex:1;min-width:80px;">
-        <label>Amount (₹L)</label>
-        <input type="number" id="saleAmount" placeholder="e.g. 50" min="0" oninput="renderBidChips()">
-      </div>
-      <div class="form-group" style="flex:2;min-width:130px;">
+      <div class="form-group">
         <label>Buying Team</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="teamInput" placeholder="Type team…" autocomplete="off"
-            oninput="filterTeamAC()" onfocus="filterTeamAC()">
+          <input type="text" id="teamInput" placeholder="Type to search…" autocomplete="off"
+            oninput="filterTeamAC()" onfocus="filterTeamAC()"
+            onkeydown="if(event.key==='Enter'){document.getElementById('saleAmount').focus();}"
+            style="font-size:16px;padding:10px 12px;">
           <div class="autocomplete-list" id="teamDrop" style="display:none;"></div>
         </div>
       </div>
-      <div class="form-group">
-        <label>&nbsp;</label>
-        <button class="btn btn-sale" onclick="recordSale()">✅ Add Sale</button>
+    </div>
+
+    <!-- Row 2: Player info strip -->
+    <div id="playerInfoStrip" style="margin-bottom:10px;"></div>
+
+    <!-- Row 3: Amount + SOLD button -->
+    <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:10px;">
+      <div class="form-group" style="flex:1;">
+        <label>Final Sale Amount (₹)</label>
+        <input type="number" id="saleAmount" placeholder="Enter amount" min="0"
+          oninput="renderBidChips()"
+          onkeydown="if(event.key==='Enter')recordSale()"
+          style="font-size:22px;font-weight:700;padding:10px 14px;color:var(--accent);">
       </div>
+      <button class="btn btn-sale" onclick="recordSale()" style="padding:14px 40px;font-size:20px;height:52px;">
+        ✅ SOLD
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="resetSaleForm()" style="height:52px;padding:0 14px;" title="Reset form">↺</button>
     </div>
-    <div id="playerInfoStrip"></div>
-    <div style="margin-bottom:5px;">
-      <span style="font-size:10px;color:var(--muted);">Quick increments:</span>
-      <div class="bid-chips" id="bidChips"></div>
+
+    <!-- Row 4: Quick bid chips -->
+    <div>
+      <span style="font-size:12px;color:var(--muted);font-weight:600;">Quick amounts:</span>
+      <div class="bid-chips" id="bidChips" style="margin-top:6px;"></div>
     </div>
-    <button class="btn btn-tiny" onclick="resetSaleForm()">↺ Reset</button>
   </div>
+
   <div class="panel">
     <div class="panel-title">🕐 Recent Sales</div>
     <table class="player-table" id="recentSaleTable">
-      <thead><tr><th>★</th><th>#</th><th>Player</th><th>Role</th><th>Team</th><th>Amount</th><th>Base</th><th>Time</th></tr></thead>
+      <thead><tr><th>★</th><th>#</th><th>Player</th><th>Role</th><th>Team</th><th>Amount</th><th>Base</th><th>Time</th><th></th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
@@ -331,6 +349,15 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
         <div id="setupMsg"></div>
         <div id="teamSetupList"></div>
       </div>
+      <div class="panel">
+        <div class="panel-title">📥 Import Teams (CSV)</div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:6px;">Format: <b>TeamName, Credits, MinSquad</b> — one per line. Credits & MinSquad are optional.</p>
+        <textarea id="teamCSV" style="width:100%;height:90px;resize:vertical;" placeholder="Alpha Strikers XI,100000,11&#10;Azad XI,100000,11&#10;Hussaini XI,100000,11"></textarea>
+        <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="importTeams()">📥 Import Teams</button>
+          <span id="teamImportMsg" style="font-size:13px;color:var(--green);"></span>
+        </div>
+      </div>
     </div>
     <div>
       <div class="panel">
@@ -353,6 +380,32 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);}
         <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Wipes ALL data — teams, players, sales. Use at the start of a new auction.</p>
         <button class="btn btn-danger" onclick="resetAll()">🗑️ Reset Everything</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SALE MODAL -->
+<div class="modal-overlay" id="editSaleModal">
+  <div class="modal">
+    <h3>✏️ Edit Sale</h3>
+    <input type="hidden" id="editSaleOrigPlayer">
+    <input type="hidden" id="editSaleOrigTeam">
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Player</label>
+      <input type="text" id="editSalePlayer" readonly style="opacity:0.6;cursor:not-allowed;">
+    </div>
+    <div class="form-group" style="margin-bottom:10px;">
+      <label>Buying Team</label>
+      <select id="editSaleTeam"></select>
+    </div>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label>Amount (₹L)</label>
+      <input type="number" id="editSaleAmount" min="0" placeholder="e.g. 50">
+    </div>
+    <div id="editSaleMsg" style="margin-bottom:8px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" onclick="saveEditSale()">Save Changes</button>
+      <button class="btn btn-ghost" onclick="closeModal('editSaleModal')">Cancel</button>
     </div>
   </div>
 </div>
@@ -622,7 +675,15 @@ function filterPlayerAC(){
 function selectPlayer(name){
   document.getElementById('playerInput').value=name;
   document.getElementById('playerDrop').style.display='none';
-  showPlayerStrip(name);renderBidChips();
+  showPlayerStrip(name);
+  // Pre-fill base price as starting amount
+  const p=state.players.find(x=>x.name===name);
+  if(p&&p.basePrice){
+    document.getElementById('saleAmount').value=p.basePrice;
+  }
+  renderBidChips();
+  // Auto-focus team field next
+  document.getElementById('teamInput').focus();
 }
 function showPlayerStrip(name){
   const p=state.players.find(x=>x.name===name);
@@ -663,12 +724,127 @@ document.addEventListener('click',e=>{
 // ── BID CHIPS ──────────────────────────────────────────────
 function renderBidChips(){
   const cur=parseFloat(document.getElementById('saleAmount').value)||0;
-  document.getElementById('bidChips').innerHTML=[5,10,25,50,75,100].map(c=>
-    `<span class="bid-chip" onclick="setBid(${cur+c})">+${c} → ₹${cur+c}L</span>`).join('');
+  // Get base price of currently selected player for context
+  const pn=document.getElementById('playerInput').value.trim();
+  const player=pn?state.players.find(p=>p.name.toLowerCase()===pn.toLowerCase()):null;
+  const base=player?.basePrice||0;
+  // Generate smart increments proportional to the scale of values in play
+  const ref=Math.max(cur,base,500);
+  let step;
+  if(ref<2000)       step=500;
+  else if(ref<10000) step=1000;
+  else if(ref<50000) step=5000;
+  else               step=10000;
+  const chips=[1,2,3,5,7,10].map(m=>step*m);
+  document.getElementById('bidChips').innerHTML=chips.map(c=>`
+    <span class="bid-chip" onclick="setBid(${base+c})" title="Base + ${c}">
+      ₹${(base+c).toLocaleString('en-IN')}
+    </span>`).join('');
 }
-function setBid(v){document.getElementById('saleAmount').value=v;renderBidChips();}
+function setBid(v){
+  document.getElementById('saleAmount').value=v;
+  renderBidChips();
+}
 
-// ── RECORD SALE ────────────────────────────────────────────
+// ── IMPORT TEAMS ───────────────────────────────────────────
+function importTeams(){
+  const raw=document.getElementById('teamCSV').value.trim();
+  if(!raw){showMsg('teamImportMsg','Paste CSV first');return;}
+  let added=0,skip=0;
+  raw.split('\n').map(l=>l.trim()).filter(l=>l).forEach(line=>{
+    const p=line.split(',').map(s=>s.trim());
+    if(!p[0]){skip++;return;}
+    const name=p[0];
+    const cred=parseFloat(p[1])||state.defaultCredits||1000;
+    const minSq=parseInt(p[2])||11;
+    if(state.teams.find(t=>t.name.toLowerCase()===name.toLowerCase())){skip++;return;}
+    state.teams.push({name,startCredits:cred,credits:cred,minSquad:minSq,players:[]});
+    added++;
+  });
+  state.teams.sort((a,b)=>a.name.localeCompare(b.name));
+  document.getElementById('teamImportMsg').textContent=`✅ Added ${added}, skipped ${skip}`;
+  setTimeout(()=>{const el=document.getElementById('teamImportMsg');if(el)el.textContent='';},3000);
+  renderTeamSetupList();refreshMyTeamSelect();renderDashboard();
+  saveState();
+}
+
+// ── SUMMARY BAR ────────────────────────────────────────────
+function renderSummaryBar(){
+  const el=document.getElementById('auctionSummaryBar');
+  if(!el)return;
+  const totalPlayers=state.players.length;
+  const soldPlayers=state.players.filter(p=>p.soldTo).length;
+  const remaining=totalPlayers-soldPlayers;
+  const totalSpent=state.sales.reduce((s,x)=>s+x.amount,0);
+  const totalBudget=state.teams.reduce((s,t)=>s+t.startCredits,0);
+  const totalLeft=state.teams.reduce((s,t)=>s+t.credits,0);
+  el.innerHTML=`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.4px;margin-bottom:4px;">Players Sold</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--green);">${soldPlayers}<span style="font-size:14px;color:var(--muted);"> / ${totalPlayers}</span></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.4px;margin-bottom:4px;">Still Available</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--blue);">${remaining}<span style="font-size:14px;color:var(--muted);"> players</span></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.4px;margin-bottom:4px;">Total Spent</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--accent);">₹${totalSpent}L</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.4px;margin-bottom:4px;">Budget Remaining</div>
+      <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--yellow);">₹${totalLeft}L<span style="font-size:12px;color:var(--muted);"> of ₹${totalBudget}L</span></div>
+    </div>`;
+}
+
+// ── EDIT SALE ──────────────────────────────────────────────
+function openEditSale(playerName,teamName){
+  const s=state.sales.find(x=>x.player===playerName&&x.team===teamName);
+  if(!s)return;
+  document.getElementById('editSaleOrigPlayer').value=playerName;
+  document.getElementById('editSaleOrigTeam').value=teamName;
+  document.getElementById('editSalePlayer').value=playerName;
+  document.getElementById('editSaleAmount').value=s.amount;
+  // populate team dropdown
+  const sel=document.getElementById('editSaleTeam');
+  sel.innerHTML=state.teams.map(t=>`<option value="${esc(t.name)}"${t.name===teamName?' selected':''}>${t.name} (₹${t.credits}L left)</option>`).join('');
+  document.getElementById('editSaleMsg').innerHTML='';
+  openModal('editSaleModal');
+}
+function saveEditSale(){
+  const origPlayer=document.getElementById('editSaleOrigPlayer').value;
+  const origTeam=document.getElementById('editSaleOrigTeam').value;
+  const newTeamName=document.getElementById('editSaleTeam').value;
+  const newAmt=parseFloat(document.getElementById('editSaleAmount').value);
+  if(isNaN(newAmt)||newAmt<0){
+    document.getElementById('editSaleMsg').innerHTML='<div class="msg msg-error">Enter valid amount</div>';return;
+  }
+  // Find objects
+  const player=state.players.find(p=>p.name===origPlayer);
+  const oldTeam=state.teams.find(t=>t.name===origTeam);
+  const newTeam=state.teams.find(t=>t.name===newTeamName);
+  const saleIdx=state.sales.findIndex(x=>x.player===origPlayer&&x.team===origTeam);
+  if(!player||!oldTeam||!newTeam||saleIdx===-1)return;
+  // Check new team has enough (add back old amount first logically)
+  const oldAmt=player.price;
+  const availableForNewTeam=(newTeamName===origTeam ? oldTeam.credits+oldAmt : newTeam.credits);
+  if(newAmt>availableForNewTeam){
+    document.getElementById('editSaleMsg').innerHTML=`<div class="msg msg-error">${newTeamName} only has ₹${availableForNewTeam}L available</div>`;return;
+  }
+  // Reverse old sale
+  oldTeam.credits+=oldAmt;
+  oldTeam.players=oldTeam.players.filter(p=>p.name!==origPlayer);
+  // Apply new sale
+  newTeam.credits-=newAmt;
+  newTeam.players.push({name:player.name,role:player.role,price:newAmt,time:player.time,star:player.star});
+  // Update player record
+  player.soldTo=newTeamName;player.price=newAmt;
+  // Update sales log
+  state.sales[saleIdx]={...state.sales[saleIdx],team:newTeamName,amount:newAmt};
+  closeModal('editSaleModal');
+  renderDashboard();renderRecentSales();renderAllPlayers();
+  saveState();
+}
 function recordSale(){
   const pn=document.getElementById('playerInput').value.trim();
   const amt=parseFloat(document.getElementById('saleAmount').value);
@@ -687,9 +863,11 @@ function recordSale(){
   team.credits-=amt;
   team.players.push({name:player.name,role:player.role,price:amt,time:ts,star:player.star});
   state.sales.unshift({player:player.name,role:player.role,team:team.name,amount:amt,basePrice:player.basePrice||0,time:ts,star:player.star});
-  showMsg('saleMsg',`✅ ${player.name} → ${team.name} for ₹${amt}L`,'success');
+  showMsg('saleMsg',`✅ ${player.name} → ${team.name} for ₹${amt.toLocaleString('en-IN')}`,'success');
   resetSaleForm();renderDashboard();renderRecentSales();renderAllPlayers();
   saveState();
+  // Auto-focus player field for rapid next entry
+  setTimeout(()=>document.getElementById('playerInput').focus(),100);
 }
 function resetSaleForm(){
   ['playerInput','saleAmount','teamInput'].forEach(id=>document.getElementById(id).value='');
@@ -729,11 +907,12 @@ function renderRecentSales(){
       <td style="color:var(--accent);font-weight:600;">₹${s.amount}L</td>
       <td class="base-price">${s.basePrice?`₹${s.basePrice}L${over?` <span style="color:var(--red);font-size:8px;">+${s.amount-s.basePrice}</span>`:''}`:`-`}</td>
       <td class="timestamp">${s.time}</td>
+      <td><button class="btn btn-tiny" onclick="openEditSale('${esc(s.player)}','${esc(s.team)}')">✏️</button></td>
     </tr>`;}).join('');
 }
 
 // ── DASHBOARD ──────────────────────────────────────────────
-function renderDashboard(){renderFundChart();renderTeamGrid();}
+function renderDashboard(){renderSummaryBar();renderFundChart();renderTeamGrid();}
 
 function renderFundChart(){
   const el=document.getElementById('fundChart');
